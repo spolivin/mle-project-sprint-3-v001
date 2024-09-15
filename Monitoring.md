@@ -1,33 +1,32 @@
-# Мониторинг
+# Monitoring
 
-Дашборд можно нагляднее посмотреть, запустив сервис при помощи *Docker Compose* или посмотрев на картинку `app_dashboard.jpg`.
+Dashboard can be seen after launching the service via *Docker Compose* or by looking at `app_dashboard.jpg`.
 
-Мониторинг основан на трэкинге как инфраструктурных метрик, таких как использование RAM и CPU, а также прикладных (абсолютное и относительное изменение времени обработки запросов) и метрик реального времени, в качестве которых за основу были взяты предсказания модели в результате отправки серии запросов к API. 
+Monitoring is based on tracking infrastructure metrics (e.g. RAM/CPU usage) as well as service-level metrics (e.g absolute/relative change of request processing time) and real-time metrics (in this case are represented by model predictions after a series of requests to the API).
 
-## Для мониторинга выбраны метрики нескольких слоев:
+## Monitoring layers
 
-### Инфраструктурный слой:
+### Infrastructural layer:
 - **RAM Usage**
 
-Эта метрика выбрана, так как при разработке приложения крайне важно контролировать использование ресурсов. Используется график типа *Gauge*, поскольку таким образом будет нагляднее всего следить за объемом занятой оперативной памяти приложения. 
+This metric has been chosen due the fact that when developing an application it is essential to keep track of the resources usage. Graph of *Gauge* type is used, since in this case it is visually easier to control the RAM usage of the application.
 
 - **CPU Usage**
 
-Эта метрика выбрана, так как при разработке приложения крайне важно контролировать и то как нагружается процессор в результате принятия запросов. Используется график типа *Gauge* по тем же причинам что и предыдущая метрика. 
+This metric has been chosen, since when developing an application it is vital to control the way the processor is overloaded during requests handling. 
 
 
-### Метрики реального времени:
+### Real-time metrics:
 - **Prediction Quantiles**
 
-Эта метрика выбрана, так как в сервис забита обученная модель, которая может выдавать необычные результаты на некоторых данных. Таким образом, чтобы это проследить были установлены 5%, 50% и 95% квантили предсказаний, сделанных моделью. Используется линейный график, потому что так удобнее увидеть возможные проблемы.
+This metric has been chosen, since the service includes a trained model which may at some point start outputting unreasonable results on some input data. Thus, in order to keep track of this, we are computing model prediction quantiles (5%, 50% and 95%). 
 
 - **Number of high evaluations**
 
-Эта метрика выбрана, так как было бы интересно с точки зрения модели насколько много квартир с ценой выше 10 млн она сможет выявить. В данном случае был выбран график типа *Stat*, чтобы сразу можно было увидеть такое число.
+This metric has been chosen, since it may be interesting how many flats the model would evaluate with price higher than 10 million.
 
+### Service-level metrics:
 
-### Метрики прикладного уровня:
+- **Request duration change / min** and **Number of requests / min**
 
-- **Request duration change / min** и **Number of requests / min**
-
-Данные метрики были выбраны для сбора данных о работе сервиса. Линейные графики в данном случае лучше всего подошли по причине более наглядного наблюдения за пиками и падениями, вызванными изменениями частотности отправки запросов.
+These metrics are used to collecting data about the service itself.

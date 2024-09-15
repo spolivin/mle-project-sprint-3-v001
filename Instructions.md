@@ -1,8 +1,8 @@
-# Инструкции по запуску микросервиса
+# Instructions to launch a microservice
 
-## 1. FastAPI микросервис в виртуальном окружение
+## 1. FastAPI microservices in the virtual environment
 
-Для того чтобы запустить приложение, необходимо сначала подготовить виртуальное окружение, а потом запустить сервер `uvicorn` (команды вводить из корневой директории):
+In order to launch the applicates, one firstly needs to prepare the virtual environment and then run `uvicorn` server:
 
 ```bash
 # Preparing virtual env
@@ -19,23 +19,24 @@ cd services
 sh run_uvicorn_server.sh 1702
 ```
 
-После выполнение приведенных выше команд запустится сервер `uvicorn` по адресу http://localhost:1702, к которому уже можно посылать запросы. 
+After successfully running the above commands, `uvicorn` server will be launched on http://localhost:1702 which can now be used to accept requests.
 
-### Пример curl-запроса к микросервису
+### Example of a curl-request to the application
 
-Тестовый запрос можно сделать, открыв новый терминал и запустив [*shell*-скрипт](services/send_test_request.sh) из директории `services`, который будет обращаться к серверу по порту 1702 для `flat_id=101` (при необходимости стоит сначала активировать виртуальное окружение через `source .venv_fastapi_app/bin/activate`):
+Test request can be made by opening up a new terminal window and running a [*shell*-script](services/send_test_request.sh) which will send a request to the server on port 1702 for `flat_id=101`:
+
 ```bash
-cd services
-
 sh send_test_request.sh 1702 101
 ```
-Потребуется немного времени, чтобы все препроцессоры обработали входные данные, после чего можно будет видеть ответ сервера в терминале. 
+> NOTE: Before running the command one needs to make sure that the virtual environment is activated by `source .venv_fastapi_app/bin/activate`. 
 
-> Remark: По завершении работы с сервером нажмите Ctrl+C, чтобы остановить работу приложения.
+It may take a bit of time for all the preprocessors to process the input data, afer which we will be able to see the server response in the terminal.
 
-## 2. FastAPI микросервис в Docker-контейнере
+> Remark: After finishing working with the server, enter `Ctrl+C` to stop the application.
 
-Следующая последовательность команд из корневой директории позволит запустить сервис в docker-контейнере:
+## 2. FastAPI microservice in a Docker-container
+
+The following sequence of commands from the root directory will allow launching the application in a docker-container:
 ```bash
 # Changing working dir
 cd services
@@ -47,22 +48,21 @@ docker image build . --tag price-prediction-app --file Dockerfile_ml_service
 docker container run --publish 4600:1702 --env-file .env price-prediction-app
 ```
 
-Для того чтобы можно было получить доступ и к веб-интерфейсу, после выполнения `docker run` необходимо не забыть перенаправить порт с 1702 на 4600 и вручную во вкладке PORTS в VSCode. Сервис будет теперь доступен по адресу http://localhost:4600.
+Web interface of the FastAPI application will now be accessible from http://localhost:4600.
 
-### Пример curl-запроса к микросервису
+### Example of a curl-request to the the application
 
-Чтобы отправить запрос к серверу, запущенному в контейнере, мы можем переиспользовать написанный скрипт `services/send_test_request.sh` с аргументом перенаправленного порта 1702 на 4600 и номером квартиры из нового терминала:
+In order to send a new test request to the server we can reuse `send_test_request.sh` script with the arguments of the forwarded port and number of a flat from a new terminal window:
+
 ```bash
-cd services
-
 sh send_test_request.sh 4600 10900
 ```
 
-> Remark: По завершению работы с контейнером рекомендуется выполнить команду `docker container stop <container-id>` для остановки. Так же во избежание ошибок стоит удалить порт из вкладки PORTS в VS Code.
+> Remark: After finishing testing the container, it is recommended to run `docker container stop <container-id>` for stopping the container.
 
-## 3. Docker compose для микросервиса и системы моониторинга
+## 3. Docker compose for the microservice and monitoring system
 
-Для запуска приложения вместе с системой мониторинга *Prometheus* и *Grafana*, необходимо выполнить следующие команды из корневой директории:
+For launching the application with the monitoring system *Prometheus* and *Grafana*, one needs to run the following commands from the root directory:
 
 ```bash
 # Changing working dir
@@ -72,40 +72,34 @@ cd services
 docker compose up --build
 ```
 
-### Пример curl-запроса к микросервису
-
-Запрос делаем при помощи того же скрипта следующим образом:
+### Example of a curl-request to the application
 
 ```bash
-cd services
-
 sh send_test_request.sh 1702 109
 ```
 
-> Remark: По завершению работы с сервисом рекомендуется выполнить команду `docker compose down` для остановки и последующего удаления контейнеров.
+> Remark: After finishing working with the service, it is recommended to run `docker compose down` for stopping and deleting containers being run.
 
-## 4. Скрипт симуляции нагрузки
+## 4. Script for simulating load
 
-Для симуляции нагрузки на сервер можно использовать скрипт [`services/simulate_server_load.py`](services/simulate_service_load.py), который генерирует 30 запросов, после каждого из которых делается пауза в 2 секунды, а также дополнительная пауза в 30 секунд после 15-ого послатого запроса. 
+In order to simulate requests being sent to the service, we can use [`simulate_server_load.py`](services/simulate_service_load.py) script which generates 30 requests after each of which there is a 2 seconds pause and an additional 30 seconds pause after the 15-th sent request.
 
-Скрипт запускается в отдельном терминале после следующих команд из корневой директории:
+Script is launched from a new terminal:
 ```bash
-cd services
 python simulate_service_load.py --port 1702
 ```
 
-Адреса сервисов:
-- микросервис: http://localhost:1702
+Services addresses:
+- Microservice: http://localhost:1702
 - Prometheus: http://localhost:9090
 - Grafana: http://localhost:3000
 
 
-## 5. Загрузка готового дашборда
+## 5. Loading a ready dashboard
 
-Для того чтобы загрузить уже готовый дашборд в *Grafana*, необходимо произвести следующие шаги после запуска сервиса через *Docker Compose*:
+In order to launch a finished dashboard in *Grafana*, one needs to complete the following steps after successfully launching the service via *Docker Compose*:
 
-1. Убедиться, что порты 3000 и 9090 перенаправлены и доступны на вкладке PORTS в VS Code.
-2. Перейти на http://localhost:3000 и войти в учетную запись *Grafana*, используя логин и пароль из `services/.env`.
-3. Указать *Prometheus* в *Data sources* с адресом `http://prometheus:9090`.
-4. Запустить скрипт при помощи команды `python fix_datasource_uid.py` из корневой директории для того чтобы скорректировать *UID* для текущей сессии *Grafana* и загрузки дашборда.
-5. Перейти на вкладку *Dashboards* в *Grafana* и перейти на *New* -> *Import*. Там достаточно скопировать и вставить содержимое файла `dashboard.json` и нажать *Load*.
+1. Go to http://localhost:3000 and get authorized using username and password from `services/.env`.
+2. Specify *Prometheus* in *Data sources* with `http://prometheus:9090` address.
+3. Run `python fix_datasource_uid.py` from the root directory in order to change the *UID* for the current *Grafana* session and loading the dashboard.
+4. Go to *Dashboards* in *Grafana* and go to *New* -> *Import*. One now needs to simply copy and past the contents of `dashboard.json` and entering *Load*.
