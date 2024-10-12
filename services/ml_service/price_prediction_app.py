@@ -20,11 +20,14 @@ app.handler = FastApiHandler()
 main_app_predictions = Histogram(
     "main_app_predictions",
     "Histogram of predictions",
-    buckets=(3_000_000, 5_000_000, 7_000_000, 9_000_000, 11_000_000, 15_000_000)
+    buckets=(3_000_000, 5_000_000, 7_000_000, 9_000_000, 11_000_000, 15_000_000),
 )
 
 # Metric 2 to be exported
-main_app_counter_pos = Counter("main_app_counter_pos", "Count of high price evaluations")
+main_app_counter_pos = Counter(
+    "main_app_counter_pos", "Count of high price evaluations"
+)
+
 
 @app.get("/")
 def start_page() -> dict:
@@ -36,11 +39,12 @@ def start_page() -> dict:
         "preprocessing": ["sklearn", "autofeat"],
     }
 
-@app.post("/api/price/") 
+
+@app.post("/api/price/")
 def get_prediction_for_item(
     flat_id: str,
     model_params: dict = Body(
-        example = {
+        example={
             "building_type_int": 2,
             "latitude": 55,
             "longitude": 33,
@@ -55,7 +59,7 @@ def get_prediction_for_item(
             "is_apartment": False,
             "total_area": 90,
         }
-    )
+    ),
 ) -> dict:
     """Displays a price-prediction result when sending a POST-request.
 
@@ -67,10 +71,7 @@ def get_prediction_for_item(
         dict: Price prediction for a flat.
     """
     # Setting request parameters
-    all_params = {
-        "flat_id": flat_id,
-        "model_params": model_params
-    }
+    all_params = {"flat_id": flat_id, "model_params": model_params}
 
     # Receiving a server response
     server_response = app.handler.handle(all_params)
